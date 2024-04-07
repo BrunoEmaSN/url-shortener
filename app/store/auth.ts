@@ -13,7 +13,7 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
   register: async (newUser) => {
     const result = await registerUser(newUser);
 
-    if(result) {
+    if (result) {
       set((state) => ({
         ...state,
         user: result,
@@ -22,8 +22,8 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
   },
   login: async (email, password) => {
     const result = await loginUser(email, password);
-    
-    if(result) {
+
+    if (result) {
       set((state) => ({
         ...state,
         user: result,

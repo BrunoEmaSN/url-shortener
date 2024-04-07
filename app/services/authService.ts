@@ -2,6 +2,10 @@ import axios from "axios";
 import { UserRegister } from "../models/user";
 import { createAddaptedUser } from "../adapters/userAdapter";
 import { ToastError, ToastSuccess } from "../ui/toast";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "cookies-ts";
+
+const cookies = new Cookies();
 
 export const registerUser = async (newUser: UserRegister) => {
   try {
@@ -11,8 +15,11 @@ export const registerUser = async (newUser: UserRegister) => {
 
     if (data) {
       const user = createAddaptedUser(data);
-      localStorage.setItem('token', user.token);
-      ToastSuccess('Create new account');
+      const token = user.token;
+      const tokenDecode = jwtDecode(token);
+
+      cookies.set("token", token, { expires: tokenDecode.exp });
+      ToastSuccess("Create new account");
 
       return user;
     }
@@ -20,7 +27,7 @@ export const registerUser = async (newUser: UserRegister) => {
     throw new Error("Could not create new account");
   } catch (error) {
     console.log(error);
-    ToastError(`${error}`);
+    ToastError(error as string);
   }
 };
 
@@ -29,14 +36,17 @@ export const loginUser = async (email: string, password: string) => {
     const url = process.env.NEXT_PUBLIC_BASE_URL + "/auth/login";
     const result = await axios.post(url, {
       email,
-      password
+      password,
     });
     const data = result.data;
 
-    if(data) {
+    if (data) {
       const user = createAddaptedUser(data);
-      localStorage.setItem('token', user.token);
-      ToastSuccess('Login');
+      const token = user.token;
+      const tokenDecode = jwtDecode(token);
+
+      cookies.set("token", token, { expires: tokenDecode.exp });
+      ToastSuccess("Login");
 
       return user;
     }
@@ -44,28 +54,30 @@ export const loginUser = async (email: string, password: string) => {
     throw new Error("Could not login");
   } catch (error) {
     console.log(error);
-    ToastError(`${error}`);
+    ToastError(error as string);
   }
-}
+};
 
 export const logoutUser = () => {
   try {
-    localStorage.removeItem('token');
+    cookies.remove("token");
   } catch (error) {
     console.log(error);
+    ToastError(error as string);
   }
-}
+};
 
 export const refrehsToken = async () => {
   try {
-    const oldToken = localStorage.getItem('token');
-    const url = process.env.NEXT_PUBLIC_BASE_URL + '/auth/refresh-token';
-    const result = await axios.post(url, {token: oldToken});
+    const oldToken = sessionStorage.getItem("token");
+    const url = process.env.NEXT_PUBLIC_BASE_URL + "/auth/refresh-token";
+    const result = await axios.post(url, { token: oldToken });
     const data = result.data;
 
-    if(data) {
+    if (data) {
       const newToken = data.token;
-      localStorage.setItem('token', newToken);
+      const tokenDecode = jwtDecode(newToken);
+      cookies.set("token", newToken, { expires: tokenDecode.exp });
 
       return newToken;
     }
@@ -73,6 +85,6 @@ export const refrehsToken = async () => {
     throw new Error("Could not refresh token");
   } catch (error) {
     console.log(error);
-    ToastError(`${error}`);
+    ToastError(error as string);
   }
-}
+};
