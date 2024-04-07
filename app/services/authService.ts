@@ -1,6 +1,7 @@
 import axios from "axios";
 import { UserRegister } from "../models/user";
 import { createAddaptedUser } from "../adapters/userAdapter";
+import { ToastError, ToastSuccess } from "../ui/toast";
 
 export const registerUser = async (newUser: UserRegister) => {
   try {
@@ -11,12 +12,15 @@ export const registerUser = async (newUser: UserRegister) => {
     if (data) {
       const user = createAddaptedUser(data);
       localStorage.setItem('token', user.token);
+      ToastSuccess('Create new account');
+
       return user;
     }
 
     throw new Error("Could not create new account");
   } catch (error) {
     console.log(error);
+    ToastError(`${error}`);
   }
 };
 
@@ -32,12 +36,15 @@ export const loginUser = async (email: string, password: string) => {
     if(data) {
       const user = createAddaptedUser(data);
       localStorage.setItem('token', user.token);
+      ToastSuccess('Login');
+
       return user;
     }
 
     throw new Error("Could not login");
   } catch (error) {
     console.log(error);
+    ToastError(`${error}`);
   }
 }
 
@@ -66,5 +73,6 @@ export const refrehsToken = async () => {
     throw new Error("Could not refresh token");
   } catch (error) {
     console.log(error);
+    ToastError(`${error}`);
   }
 }
