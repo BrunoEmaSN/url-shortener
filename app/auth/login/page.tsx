@@ -1,50 +1,33 @@
 "use client";
-import CardAuth from "@/app/ui/auth/cardAuth";
-import TextField from "../../ui/dashboard/text-field";
+import { useRouter } from "next/navigation";
 import { useBoundStore } from "@/app/store";
-import { useState } from "react";
+import useAuthValidate from "@/app/hooks/useAuthValidate";
+import CardAuth from "@/app/ui/auth/cardAuth";
+import TextField from "@/app/ui/dashboard/text-field";
 import { ToastError } from "@/app/ui/toast";
 
 export default function LoginPage() {
+  const router = useRouter();
   const { login } = useBoundStore((state) => state);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-  });
+  const {
+    email,
+    password,
+    errors,
+    setEmail,
+    setPassword,
+    validateFields
+  } = useAuthValidate(false);
 
-  const validateFields = () => {
-    let errors = {
-      email: "",
-      password: "",
-    };
-
-    if (!email) {
-      errors.email = "Email is required.";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = "Email is invalid.";
-    }
-
-    if (!password) {
-      errors.password = "Password is required.";
-    } else if (password.length < 4) {
-      errors.password = "Password must be at least 6 characters.";
-    } else if(password.length > 12) {
-      errors.password = "Password must be up to 12 characters.";
-    }
-
-    setErrors(errors);
-    return !errors.email && !errors.password;
-  };
-
-  const handleSubmit = () => {
-    if(validateFields()) {
-      login(email, password)
+  const handleSubmit = async () => {
+    if (validateFields()) {
+      const result = await login(email, password);
+      if (result) {
+        router.push("/dashboard");
+      }
     } else {
-      ToastError('Please complete the fields');
+      ToastError("Please complete the fields");
     }
-  }
+  };
 
   return (
     <CardAuth title="Login">
@@ -59,6 +42,7 @@ export default function LoginPage() {
           <TextField
             id="email"
             type="text"
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <p className="h-6 text-red-800">{errors.email}</p>
@@ -85,7 +69,8 @@ export default function LoginPage() {
         <div className="mt-2">
           <TextField
             id="password"
-            type="text"
+            type="password"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           <p className="h-6 text-red-800">{errors.password}</p>
@@ -94,8 +79,9 @@ export default function LoginPage() {
 
       <div>
         <button
-          onClick={handleSubmit}
           type="submit"
+          onClick={handleSubmit}
+          disabled={Boolean(!email && !password)}
           className="flex w-full justify-center rounded-md bg-cyan-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
         >
           Login
