@@ -5,6 +5,7 @@ import useAuthValidate from "@/app/hooks/useAuthValidate";
 import CardAuth from "@/app/ui/auth/cardAuth";
 import TextField from "@/app/ui/dashboard/text-field";
 import { ToastError } from "@/app/ui/toast";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -90,12 +91,12 @@ export default function LoginPage() {
 
       <p className="mt-10 text-center text-sm text-gray-500">
         Not a member?{" "}
-        <a
-          href="#"
+        <Link
+          href="/auth/register"
           className="font-semibold leading-6 text-cyan-600 hover:text-cyan-500"
         >
           Sing up
-        </a>
+        </Link>
       </p>
     </CardAuth>
   );

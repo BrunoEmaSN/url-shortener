@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useBoundStore } from "@/app/store";
 import useAuthValidate from "@/app/hooks/useAuthValidate";
 import CardAuth from "@/app/ui/auth/cardAuth";
@@ -123,12 +124,12 @@ export default function RegisterPage() {
 
       <p className="mt-10 text-center text-sm text-gray-500">
         You have an account?{" "}
-        <a
-          href="#"
+        <Link
+          href="/auth/login"
           className="font-semibold leading-6 text-cyan-600 hover:text-cyan-500"
         >
           Sing in
-        </a>
+        </Link>
       </p>
     </CardAuth>
   );
