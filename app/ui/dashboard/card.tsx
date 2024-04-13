@@ -1,8 +1,8 @@
 'use client'
 
-import { Slide, toast } from "react-toastify";
 import IconButton from "../iconButton";
 import DocumentDuplicate from '../icons/document-duplicate';
+import { ToastSuccess } from "../toast";
 
 interface CardProps {
   url: string;
@@ -21,17 +21,7 @@ export default function Card(props: CardProps) {
     } catch (error) {
       await navigator.clipboard.writeText(txt);
     }
-    toast('✅ Copied to clipboard', {
-      position: "bottom-right",
-      autoClose: 1000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-      transition: Slide,
-    });
+    ToastSuccess('Copied to clipboard');
   };
 
   return (
